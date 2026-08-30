@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "misr-visa-dev",
+      "runtimeExecutable": "/Users/fatimamuhammedjidda/.local/node/bin/node",
+      "runtimeArgs": ["/Users/fatimamuhammedjidda/.local/node/bin/npm", "run", "dev"],
+      "port": 3000
+    }
+  ]
+}
