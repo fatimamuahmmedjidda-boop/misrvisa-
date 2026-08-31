@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SectionHeading from "@/components/SectionHeading";
 import CTASection from "@/components/CTASection";
+import QRVisaNotice from "@/components/QRVisaNotice";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
@@ -81,6 +82,8 @@ export default function HowItWorksPage() {
           </ol>
         </div>
       </section>
+
+      <QRVisaNotice />
 
       <CTASection />
     </>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import CTASection from "@/components/CTASection";
 import Reveal from "@/components/Reveal";
 import Button from "@/components/Button";
+import QRVisaNotice from "@/components/QRVisaNotice";
 import { getServiceBySlug } from "@/lib/content/services";
 
 export const metadata: Metadata = {
@@ -136,6 +137,8 @@ export default function VisaOnArrivalPage() {
           </div>
         </div>
       </section>
+
+      <QRVisaNotice />
 
       <div className="mx-auto max-w-3xl px-5 pb-16 lg:px-8">
         <div className="rounded-2xl border border-emerald/10 bg-emerald/5 p-6 text-center text-sm leading-relaxed text-emerald-dark">

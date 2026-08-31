@@ -78,7 +78,14 @@ export default async function HomePage() {
                 See How It Works
               </Button>
             </div>
-            <p className="mt-6 text-xs leading-relaxed text-white/50">
+            <p className="mt-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-medium text-white/85 ring-1 ring-white/15">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                <path d="M12 21s7-6.4 7-11a7 7 0 1 0-14 0c0 4.6 7 11 7 11Z" strokeLinejoin="round" />
+                <circle cx="12" cy="10" r="2.5" />
+              </svg>
+              Currently serving travelers arriving at Cairo International Airport
+            </p>
+            <p className="mt-5 text-xs leading-relaxed text-white/50">
               MISR VISA is not an embassy and does not process e-Visas. We assist with
               Visa-on-Arrival preparation — approval and entry are decided solely by Egyptian
               immigration authorities.
