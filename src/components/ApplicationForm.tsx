@@ -18,10 +18,13 @@ export default function ApplicationForm({ preselectedService }: { preselectedSer
     travelDate: "",
     travelPurpose: purposes[0],
     additionalInfo: "",
+    password: "",
+    referralCode: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle");
   const [trackingId, setTrackingId] = useState<string | null>(null);
+  const [accountCreated, setAccountCreated] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
   function update<K extends keyof typeof values>(key: K, value: (typeof values)[K]) {
@@ -57,6 +60,7 @@ export default function ApplicationForm({ preselectedService }: { preselectedSer
         return;
       }
       setTrackingId(data.trackingId);
+      setAccountCreated(Boolean(data.accountCreated));
       setStatus("idle");
     } catch {
       setServerError("Network error — please check your connection and try again.");
@@ -88,6 +92,34 @@ export default function ApplicationForm({ preselectedService }: { preselectedSer
           </Link>{" "}
           page. Our team will reach out to the WhatsApp number or email you provided.
         </p>
+
+        <div className="mt-7 border-t border-ink/10 pt-6">
+          {accountCreated ? (
+            <>
+              <p className="text-sm text-ink/70">
+                Your account is ready and you&rsquo;re signed in.
+              </p>
+              <Link
+                href="/account"
+                className="mt-4 inline-block rounded-full bg-emerald px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white hover:bg-emerald-dark"
+              >
+                Go to My Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-ink/70">
+                Want all your applications in one place?
+              </p>
+              <Link
+                href="/account/register"
+                className="mt-4 inline-block rounded-full border border-emerald px-6 py-3 text-sm font-semibold uppercase tracking-wide text-emerald hover:bg-emerald hover:text-white"
+              >
+                Set Up an Account
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     );
   }
@@ -189,6 +221,34 @@ export default function ApplicationForm({ preselectedService }: { preselectedSer
           placeholder="Anything else we should know?"
         />
       </Field>
+
+      <div className="grid gap-6 rounded-2xl bg-ivory p-6 sm:grid-cols-2">
+        <div className="sm:col-span-2">
+          <p className="text-sm font-semibold text-emerald-dark">Create an account (optional)</p>
+          <p className="mt-1 text-xs leading-relaxed text-ink/55">
+            Set a password to sign in later and see all your applications and their progress in one
+            place.
+          </p>
+        </div>
+        <Field label="Password" htmlFor="password" optional error={errors.password}>
+          <TextInput
+            id="password"
+            type="password"
+            autoComplete="new-password"
+            value={values.password}
+            onChange={(e) => update("password", e.target.value)}
+            placeholder="At least 8 characters"
+          />
+        </Field>
+        <Field label="Referral Code" htmlFor="referralCode" optional error={errors.referralCode}>
+          <TextInput
+            id="referralCode"
+            value={values.referralCode}
+            onChange={(e) => update("referralCode", e.target.value.toUpperCase())}
+            placeholder="If an agent referred you"
+          />
+        </Field>
+      </div>
 
       {serverError && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{serverError}</p>

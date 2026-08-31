@@ -161,3 +161,7 @@ export const services: Service[] = [
 export function getServiceBySlug(slug: string): Service | undefined {
   return services.find((s) => s.slug === slug);
 }
+
+export function serviceName(dbValue: string): string {
+  return services.find((s) => s.dbValue === dbValue)?.name ?? dbValue;
+}

@@ -4,7 +4,7 @@ import CTASection from "@/components/CTASection";
 import Reveal from "@/components/Reveal";
 
 export const metadata: Metadata = {
-  title: "How It Works",
+  title: "How Egypt Visa-on-Arrival Assistance Works",
   description: "How the MISR VISA application process works, from submitting your details to arriving in Egypt.",
   alternates: { canonical: "/how-it-works" },
 };

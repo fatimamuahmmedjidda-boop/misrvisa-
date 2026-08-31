@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const links: { href: string; label: string }[] = [
-  { href: "/about", label: "About" },
+  { href: "/who-we-are", label: "Who We Are" },
   { href: "/services", label: "Services" },
   { href: "/visa-on-arrival", label: "Visa-on-Arrival" },
   { href: "/how-it-works", label: "How It Works" },
@@ -50,17 +50,17 @@ export default function Navbar() {
             className="h-9 w-9 rounded-md"
             priority
           />
-          <span className="font-display text-lg font-semibold tracking-tight text-emerald">
+          <span className="font-display text-lg font-semibold tracking-[0.18em] text-emerald">
             MISR VISA
           </span>
         </Link>
 
-        <div className="hidden items-center gap-6 lg:flex">
+        <div className="hidden items-center gap-5 xl:flex">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-[13px] font-medium uppercase tracking-wide transition-colors hover:text-emerald ${
+              className={`whitespace-nowrap text-[13px] font-medium uppercase tracking-wide transition-colors hover:text-emerald ${
                 pathname === link.href ? "text-emerald" : "text-ink/70"
               }`}
             >
@@ -69,16 +69,22 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 lg:flex">
+        <div className="hidden items-center gap-3 border-l border-black/10 pl-5 xl:flex">
+          <Link
+            href="/account/login"
+            className="whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-ink/60 transition-colors hover:text-emerald"
+          >
+            Sign In
+          </Link>
           <Link
             href="/contact"
-            className="text-[13px] font-semibold uppercase tracking-wide text-emerald transition-colors hover:text-emerald-light"
+            className="whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-emerald transition-colors hover:text-emerald-light"
           >
             Contact Us
           </Link>
           <Link
             href="/apply"
-            className="rounded-full bg-emerald px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-emerald-dark hover:shadow-md"
+            className="whitespace-nowrap rounded-full bg-emerald px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-emerald-dark hover:shadow-md"
           >
             Apply Now
           </Link>
@@ -87,7 +93,7 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-md text-emerald lg:hidden"
+          className="flex h-10 w-10 items-center justify-center rounded-md text-emerald xl:hidden"
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}
         >
@@ -102,7 +108,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-black/5 bg-white lg:hidden">
+        <div className="border-t border-black/5 bg-white xl:hidden">
           <div className="flex flex-col gap-1 px-5 py-4">
             {links.map((link) => (
               <Link
@@ -113,6 +119,12 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/account/login"
+              className="rounded-md px-3 py-2.5 text-sm font-medium text-ink/80 hover:bg-ivory hover:text-emerald"
+            >
+              Sign In
+            </Link>
             <Link
               href="/contact"
               className="rounded-md px-3 py-2.5 text-sm font-medium text-ink/80 hover:bg-ivory hover:text-emerald"

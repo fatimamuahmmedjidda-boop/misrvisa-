@@ -7,6 +7,7 @@ const updateSchema = z.object({
   status: z.enum(APPLICATION_STATUSES).optional(),
   notes: z.string().max(4000).optional(),
   assignedStaff: z.string().max(200).optional(),
+  amountCharged: z.coerce.number().min(0).nullable().optional(),
 });
 
 export async function PATCH(request: Request, { params }: RouteContext<"/api/admin/applications/[id]">) {

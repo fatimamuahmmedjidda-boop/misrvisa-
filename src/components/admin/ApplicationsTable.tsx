@@ -13,6 +13,8 @@ export interface ApplicationRow {
   createdAt: string;
   notes: string | null;
   assignedStaff: string | null;
+  amountCharged: number | null;
+  partnerName: string | null;
   customer: { fullName: string; email: string; whatsapp: string; nationality: string };
 }
 
@@ -21,7 +23,15 @@ export default function ApplicationsTable({ applications }: { applications: Appl
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
 
-  async function updateApplication(id: string, patch: Partial<{ status: ApplicationStatus; notes: string; assignedStaff: string }>) {
+  async function updateApplication(
+    id: string,
+    patch: Partial<{
+      status: ApplicationStatus;
+      notes: string;
+      assignedStaff: string;
+      amountCharged: number | null;
+    }>
+  ) {
     setSavingId(id);
     try {
       const res = await fetch(`/api/admin/applications/${id}`, {
@@ -113,6 +123,25 @@ export default function ApplicationsTable({ applications }: { applications: Appl
                             {new Date(app.travelDate).toLocaleDateString()}
                           </p>
                         )}
+                        <p className="mt-1">
+                          <span className="font-medium text-ink">Referred by:</span>{" "}
+                          {app.partnerName ?? "—"}
+                        </p>
+                        <label className="mt-3 block text-xs font-semibold uppercase tracking-wide text-ink/50">
+                          Amount Charged (for partner commission)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          defaultValue={app.amountCharged ?? ""}
+                          onBlur={(e) =>
+                            updateApplication(app.id, {
+                              amountCharged: e.target.value === "" ? null : Number(e.target.value),
+                            })
+                          }
+                          className="mt-1 block w-full rounded-lg border border-black/10 bg-white px-3 py-2 text-sm focus:border-emerald focus:outline-none"
+                        />
                       </div>
                       <div>
                         <label className="text-xs font-semibold uppercase tracking-wide text-ink/50">

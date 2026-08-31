@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import TrackForm from "@/components/TrackForm";
 
 export const metadata: Metadata = {
-  title: "Track Your Application",
+  title: "Track Your Egypt Visa Application",
   description: "Enter your MISR VISA tracking number to check your application status.",
   alternates: { canonical: "/track" },
 };

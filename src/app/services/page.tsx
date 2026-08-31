@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import { services } from "@/lib/content/services";
 
 export const metadata: Metadata = {
-  title: "Services",
+  title: "Egypt Visa, Accommodation & Travel Services",
   description:
     "Visa-on-Arrival assistance, ticket assistance, accommodation, airport pickup, and OK-to-Board support for travelers to Egypt.",
   alternates: { canonical: "/services" },

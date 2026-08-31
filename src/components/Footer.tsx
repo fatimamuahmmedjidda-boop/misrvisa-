@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { socialLinks, CONTACT_EMAIL, SITE_URL, WHATSAPP_NUMBER, WHATSAPP_LINK } from "@/lib/content/social";
 
 const serviceLinks = [
   { href: "/visa-on-arrival", label: "Visa-on-Arrival" },
@@ -10,7 +11,7 @@ const serviceLinks = [
 ];
 
 const companyLinks = [
-  { href: "/about", label: "About Us" },
+  { href: "/who-we-are", label: "Who We Are" },
   { href: "/how-it-works", label: "How It Works" },
   { href: "/blog", label: "Visa News" },
   { href: "/faq", label: "FAQ" },
@@ -20,6 +21,9 @@ const companyLinks = [
 const legalLinks = [
   { href: "/track", label: "Track Application" },
   { href: "/contact", label: "Contact" },
+  { href: "/terms", label: "Terms & Conditions" },
+  { href: "/account/login", label: "My Account" },
+  { href: "/partner-portal/login", label: "Partner Login" },
 ];
 
 export default function Footer() {
@@ -36,13 +40,41 @@ export default function Footer() {
                 height={32}
                 className="h-8 w-8 rounded-md"
               />
-              <span className="font-display text-base font-semibold text-white">
+              <span className="font-display text-base font-semibold tracking-[0.18em] text-white">
                 MISR VISA
               </span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-white/60">
               Egypt Visa-on-Arrival assistance and traveler support for African travelers, since 2022.
             </p>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-4 block text-sm text-white/70 hover:text-white"
+            >
+              {CONTACT_EMAIL}
+            </a>
+            <a
+              href={WHATSAPP_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1.5 block text-sm text-white/70 hover:text-white"
+            >
+              WhatsApp: {WHATSAPP_NUMBER}
+            </a>
+            <div className="mt-5 flex items-center gap-3">
+              {socialLinks.map((s) => (
+                <a
+                  key={s.name}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={s.name}
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white/80 transition hover:bg-gold hover:text-emerald-dark"
+                >
+                  {s.icon}
+                </a>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -94,6 +126,14 @@ export default function Footer() {
 
         <div className="mt-8 flex flex-col gap-4 border-t border-white/10 pt-8 text-xs text-white/50 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {new Date().getFullYear()} MISR VISA. All rights reserved.</p>
+          <a
+            href={SITE_URL}
+            className="hover:text-white"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            www.misrvisa.com
+          </a>
           <p>Egypt Visa-on-Arrival Assistance for African Travelers</p>
         </div>
       </div>

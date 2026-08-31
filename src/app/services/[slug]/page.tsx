@@ -18,9 +18,14 @@ export async function generateMetadata({
   const service = getServiceBySlug(slug);
   if (!service) return {};
   return {
-    title: service.name,
-    description: service.shortDescription,
+    title: `${service.name} for Egypt Travel`,
+    description: `${service.shortDescription} MISR VISA supports eligible African travelers going to Egypt.`,
     alternates: { canonical: `/services/${service.slug}` },
+    openGraph: {
+      title: `${service.name} — MISR VISA`,
+      description: service.shortDescription,
+      url: `/services/${service.slug}`,
+    },
   };
 }
 
@@ -34,8 +39,24 @@ export default async function ServiceDetailPage({ params }: PageProps<"/services
   const service = getServiceBySlug(slug);
   if (!service) notFound();
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: service.name,
+    description: service.whatItIs,
+    serviceType: service.name,
+    provider: { "@id": `${siteUrl}/#organization` },
+    areaServed: { "@type": "Country", name: "Egypt" },
+    url: `${siteUrl}/services/${service.slug}`,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
       <section className="bg-emerald py-16">
         <div className="mx-auto max-w-4xl px-5 text-center lg:px-8">
           <Link href="/services" className="text-xs font-semibold uppercase tracking-wide text-gold">

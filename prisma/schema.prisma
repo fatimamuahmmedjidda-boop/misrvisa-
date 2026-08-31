@@ -1,10 +1,5 @@
-// Local dev uses SQLite (zero-config, file-based).
-// Before deploying to Vercel, switch provider to "postgresql" and set
-// DATABASE_URL to a managed Postgres connection string (Neon, Vercel Postgres,
-// or Supabase all work) — SQLite's local file does not survive on serverless.
-// See README.md "Deployment" for the exact steps.
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,13 +17,18 @@ generator client {
 // PartnerStatus:       NEW | CONTACTED | IN_DISCUSSION | ACTIVE | DECLINED
 
 model Customer {
-  id           String        @id @default(cuid())
-  fullName     String
-  nationality  String
-  whatsapp     String
-  email        String        @unique
-  createdAt    DateTime      @default(now())
-  applications Application[]
+  id                 String        @id @default(cuid())
+  fullName           String
+  nationality        String
+  whatsapp           String
+  email              String        @unique
+  passwordHash       String?
+  referredByPartner  Partner?      @relation(fields: [referredByPartnerId], references: [id])
+  referredByPartnerId String?
+  createdAt          DateTime      @default(now())
+  applications       Application[]
+
+  @@index([referredByPartnerId])
 }
 
 model Application {
@@ -43,11 +43,30 @@ model Application {
   status            String            @default("RECEIVED")
   notes             String?
   assignedStaff     String?
+  amountCharged     Float?
+  partner           Partner?          @relation(fields: [partnerId], references: [id])
+  partnerId         String?
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
   @@index([trackingId])
   @@index([status])
+  @@index([partnerId])
+}
+
+// Partner/agent accounts (created by admin only). Distinct from PartnerApplication,
+// which is the public "Partner With Us" lead-inquiry form below.
+model Partner {
+  id                String        @id @default(cuid())
+  name              String
+  email             String        @unique
+  passwordHash      String
+  referralCode      String        @unique
+  commissionPercent Float         @default(10)
+  active            Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  customers         Customer[]
+  applications      Application[]
 }
 
 model PartnerApplication {

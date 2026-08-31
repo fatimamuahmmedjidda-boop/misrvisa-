@@ -5,7 +5,7 @@ import type { ApplicationStatus } from "@/lib/statuses";
 export default async function AdminApplicationsPage() {
   const applications = await prisma.application.findMany({
     orderBy: { createdAt: "desc" },
-    include: { customer: true },
+    include: { customer: true, partner: { select: { name: true } } },
   });
 
   const rows = applications.map((app) => ({
@@ -18,6 +18,8 @@ export default async function AdminApplicationsPage() {
     createdAt: app.createdAt.toISOString(),
     notes: app.notes,
     assignedStaff: app.assignedStaff,
+    amountCharged: app.amountCharged,
+    partnerName: app.partner?.name ?? null,
     customer: {
       fullName: app.customer.fullName,
       email: app.customer.email,

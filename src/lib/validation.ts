@@ -17,6 +17,8 @@ export const applicationSchema = z.object({
   travelPurpose: z.string().trim().min(2, "Travel purpose is required").max(200),
   service: serviceEnum,
   additionalInfo: z.string().trim().max(2000).optional().or(z.literal("")),
+  password: z.string().min(8, "Password must be at least 8 characters").max(200).optional().or(z.literal("")),
+  referralCode: z.string().trim().max(50).optional().or(z.literal("")),
 });
 
 export type ApplicationInput = z.infer<typeof applicationSchema>;
@@ -75,6 +77,23 @@ export const blogPostSchema = z.object({
 });
 
 export type BlogPostInput = z.infer<typeof blogPostSchema>;
+
+export const loginSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const customerRegisterSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address").max(200),
+  password: z.string().min(8, "Password must be at least 8 characters").max(200),
+});
+
+export const adminPartnerSchema = z.object({
+  name: z.string().trim().min(2, "Partner name is required").max(200),
+  email: z.string().trim().email("Enter a valid email address").max(200),
+  password: z.string().min(8, "Password must be at least 8 characters").max(200),
+  commissionPercent: z.coerce.number().min(0).max(100),
+});
 
 export const testimonialSchema = z.object({
   customerName: z.string().trim().min(2, "Customer name is required").max(200),

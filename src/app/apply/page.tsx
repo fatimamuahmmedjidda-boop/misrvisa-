@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import ApplicationForm from "@/components/ApplicationForm";
 
 export const metadata: Metadata = {
-  title: "Apply Now",
+  title: "Apply for Egypt Visa-on-Arrival Assistance",
   description: "Start your MISR VISA application — choose a service and submit your travel details to get your tracking number.",
   alternates: { canonical: "/apply" },
 };

@@ -112,8 +112,33 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Who we are — short */}
+      <section className="border-y border-black/5 bg-ivory py-20">
+        <div className="mx-auto max-w-3xl px-5 text-center lg:px-8">
+          <Reveal>
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
+              Who we are
+            </span>
+            <h2 className="mt-4 font-display text-2xl font-semibold text-emerald-dark sm:text-3xl">
+              From studying in Cairo to building MISR VISA
+            </h2>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-ink/70">
+              After experiencing Egypt firsthand, we understood the challenges travelers face
+              before arriving. MISR VISA was created in 2022 to make the journey simpler — with
+              Visa on Arrival assistance and practical travel support.
+            </p>
+            <Link
+              href="/who-we-are"
+              className="mt-7 inline-block text-sm font-semibold uppercase tracking-wide text-emerald hover:text-emerald-dark"
+            >
+              Read our story &rarr;
+            </Link>
+          </Reveal>
+        </div>
+      </section>
+
       {/* Services */}
-      <section className="bg-ivory py-20">
+      <section className="py-20">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <SectionHeading eyebrow="Services" title="How MISR VISA supports your trip" />
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -127,7 +152,7 @@ export default async function HomePage() {
       </section>
 
       {/* Why MISR VISA */}
-      <section className="py-20">
+      <section className="bg-ivory py-20">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <SectionHeading eyebrow="Why MISR VISA" title="Built on trust and clarity" />
           <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">

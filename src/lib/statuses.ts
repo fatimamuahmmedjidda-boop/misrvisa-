@@ -20,6 +20,25 @@ export const APPLICATION_STATUS_LABELS: Record<ApplicationStatus, string> = {
   CANCELLED: "Cancelled",
 };
 
+// Ordered stages shown as a progress bar to customers. CANCELLED is excluded —
+// it is an end state, not a step along the way.
+export const APPLICATION_PROGRESS_STAGES = [
+  "RECEIVED",
+  "UNDER_REVIEW",
+  "DOCUMENTS_REQUIRED",
+  "PROCESSING",
+  "READY",
+  "COMPLETED",
+] as const;
+
+export function progressPercent(status: string): number {
+  const index = APPLICATION_PROGRESS_STAGES.indexOf(
+    status as (typeof APPLICATION_PROGRESS_STAGES)[number]
+  );
+  if (index < 0) return 0;
+  return Math.round((index / (APPLICATION_PROGRESS_STAGES.length - 1)) * 100);
+}
+
 export const PARTNER_STATUSES = [
   "NEW",
   "CONTACTED",
