@@ -11,6 +11,7 @@ const navItems = [
   { href: "/admin/partner-accounts", label: "Partner Accounts" },
   { href: "/admin/blog", label: "Blog" },
   { href: "/admin/testimonials", label: "Testimonials" },
+  { href: "/admin/password-resets", label: "Password Resets" },
 ];
 
 export default async function AdminDashboardLayout({ children }: { children: ReactNode }) {

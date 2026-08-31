@@ -135,6 +135,26 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+// One-time password reset links for travelers and partners.
+//
+// The token is stored in plain text because staff deliver the link by hand
+// (WhatsApp or email) from the admin area — they need to be able to read it.
+// It is single-use and expires after an hour, and only signed-in admins can
+// see it. If automatic reset emails are added later, switch this to storing
+// a hash so nobody, including staff, can read a live token.
+model PasswordReset {
+  id        String    @id @default(cuid())
+  email     String
+  userType  String // CUSTOMER | PARTNER
+  token     String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+  @@index([expiresAt])
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique

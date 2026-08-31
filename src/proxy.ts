@@ -46,8 +46,12 @@ const areas = [
     publicPaths: [
       "/account/login",
       "/account/register",
+      "/account/forgot",
+      "/account/reset",
       "/api/account/login",
       "/api/account/register",
+      "/api/account/forgot",
+      "/api/account/reset",
     ],
   },
 ];

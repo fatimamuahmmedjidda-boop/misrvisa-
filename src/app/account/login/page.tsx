@@ -32,6 +32,11 @@ export default function CustomerLoginPage() {
         </div>
 
         <p className="mt-6 text-center text-sm text-ink/60">
+          <Link href="/account/forgot" className="font-semibold text-emerald underline">
+            Forgot your password?
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-sm text-ink/60">
           Applied but never set a password?{" "}
           <Link href="/account/register" className="font-semibold text-emerald underline">
             Set one up
