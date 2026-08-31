@@ -5,14 +5,25 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const links: { href: string; label: string }[] = [
-  { href: "/who-we-are", label: "Who We Are" },
+// Only the few links most visitors actually need sit in the bar. Everything
+// else lives in the menu panel, so the header stays light on desktop instead
+// of showing ten items at once.
+const primaryLinks = [
   { href: "/services", label: "Services" },
   { href: "/visa-on-arrival", label: "Visa-on-Arrival" },
   { href: "/how-it-works", label: "How It Works" },
-  { href: "/blog", label: "Visa News" },
+];
+
+const menuLinks = [
+  { href: "/services", label: "Services" },
+  { href: "/visa-on-arrival", label: "Visa-on-Arrival" },
+  { href: "/how-it-works", label: "How It Works" },
+  { href: "/who-we-are", label: "Who We Are" },
   { href: "/faq", label: "FAQ" },
+  { href: "/blog", label: "Visa News" },
+  { href: "/track", label: "Track Application" },
   { href: "/partner", label: "Partner With Us" },
+  { href: "/contact", label: "Contact Us" },
 ];
 
 export default function Navbar() {
@@ -28,20 +39,29 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- close mobile menu on route change
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- close menu on route change
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header
       className={`sticky top-0 z-50 border-b transition-colors duration-300 ${
         scrolled
-          ? "bg-white/95 backdrop-blur border-black/5 shadow-sm"
-          : "bg-white border-transparent"
+          ? "border-black/5 bg-white/90 shadow-sm backdrop-blur-md"
+          : "border-transparent bg-white"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="MISR VISA home">
+      <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-3.5 lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="MISR VISA home">
           <Image
             src="/brand/logo-mark.png"
             alt="MISR VISA"
@@ -55,12 +75,12 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-5 xl:flex">
-          {links.map((link) => (
+        <div className="hidden items-center gap-8 lg:flex">
+          {primaryLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`whitespace-nowrap text-[13px] font-medium uppercase tracking-wide transition-colors hover:text-emerald ${
+              className={`whitespace-nowrap text-sm transition-colors hover:text-emerald ${
                 pathname === link.href ? "text-emerald" : "text-ink/70"
               }`}
             >
@@ -69,74 +89,59 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div className="hidden items-center gap-3 border-l border-black/10 pl-5 xl:flex">
-          <Link
-            href="/account/login"
-            className="whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-ink/60 transition-colors hover:text-emerald"
-          >
-            Sign In
-          </Link>
-          <Link
-            href="/contact"
-            className="whitespace-nowrap text-[13px] font-semibold uppercase tracking-wide text-emerald transition-colors hover:text-emerald-light"
-          >
-            Contact Us
-          </Link>
+        <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/apply"
-            className="whitespace-nowrap rounded-full bg-emerald px-5 py-2.5 text-[13px] font-semibold uppercase tracking-wide text-white shadow-sm transition-all hover:bg-emerald-dark hover:shadow-md"
+            className="whitespace-nowrap rounded-full bg-emerald px-5 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all hover:bg-emerald-dark hover:shadow-md"
           >
             Apply Now
           </Link>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            className="flex h-10 w-10 items-center justify-center rounded-full text-emerald transition-colors hover:bg-ivory"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+              {open ? (
+                <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
+              ) : (
+                <path d="M4 8h16M4 16h16" strokeLinecap="round" />
+              )}
+            </svg>
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={() => setOpen((v) => !v)}
-          className="flex h-10 w-10 items-center justify-center rounded-md text-emerald xl:hidden"
-          aria-label={open ? "Close menu" : "Open menu"}
-          aria-expanded={open}
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {open ? (
-              <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-            ) : (
-              <path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" />
-            )}
-          </svg>
-        </button>
       </nav>
 
       {open && (
-        <div className="border-t border-black/5 bg-white xl:hidden">
-          <div className="flex flex-col gap-1 px-5 py-4">
-            {links.map((link) => (
+        <div className="border-t border-black/5 bg-white">
+          <div className="mx-auto max-w-7xl px-5 py-6 lg:px-8">
+            <div className="grid gap-x-10 gap-y-1 sm:grid-cols-2 lg:grid-cols-3">
+              {menuLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="rounded-lg px-3 py-2.5 text-sm text-ink/75 transition-colors hover:bg-ivory hover:text-emerald"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-black/5 pt-5">
               <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-md px-3 py-2.5 text-sm font-medium text-ink/80 hover:bg-ivory hover:text-emerald"
+                href="/account/login"
+                className="text-sm font-semibold text-emerald hover:text-emerald-dark"
               >
-                {link.label}
+                Sign In to Your Account
               </Link>
-            ))}
-            <Link
-              href="/account/login"
-              className="rounded-md px-3 py-2.5 text-sm font-medium text-ink/80 hover:bg-ivory hover:text-emerald"
-            >
-              Sign In
-            </Link>
-            <Link
-              href="/contact"
-              className="rounded-md px-3 py-2.5 text-sm font-medium text-ink/80 hover:bg-ivory hover:text-emerald"
-            >
-              Contact Us
-            </Link>
-            <Link
-              href="/apply"
-              className="mt-2 rounded-full bg-emerald px-5 py-3 text-center text-sm font-semibold uppercase tracking-wide text-white"
-            >
-              Apply Now
-            </Link>
+              <Link
+                href="/partner-portal/login"
+                className="text-sm text-ink/55 hover:text-emerald"
+              >
+                Partner Login
+              </Link>
+            </div>
           </div>
         </div>
       )}
