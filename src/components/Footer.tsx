@@ -134,6 +134,12 @@ export default function Footer() {
           >
             www.misrvisa.com
           </a>
+          <p>
+            Founded by{" "}
+            <a href="https://www.fatimamjidda.com" className="underline underline-offset-4 hover:text-white">
+              Fatima Muhammad Jidda
+            </a>
+          </p>
           <p>Egypt Visa-on-Arrival Assistance for African Travelers</p>
         </div>
       </div>

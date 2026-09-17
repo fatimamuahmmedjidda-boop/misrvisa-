@@ -42,7 +42,10 @@ export default function WhoWeArePage() {
       foundingDate: "2022",
       founder: {
         "@type": "Person",
-        name: "Fatima",
+        // Same identity as her personal website, so search engines connect MISR VISA to her.
+        "@id": "https://www.fatimamjidda.com/#person",
+        name: "Fatima Muhammad Jidda",
+        url: "https://www.fatimamjidda.com",
         jobTitle: "Founder",
         description:
           "Software engineering professional and entrepreneur who studied and lived in Egypt.",
@@ -82,7 +85,14 @@ export default function WhoWeArePage() {
             <SectionHeading align="left" eyebrow="Our Story" title="How MISR VISA started" />
             <div className="mt-6 space-y-4 text-base leading-relaxed text-ink/70">
               <p>
-                Our journey started in 2020, when our founder came to Egypt to study and
+                Our journey started in 2020, when our founder,{" "}
+                <a
+                  href="https://www.fatimamjidda.com"
+                  className="font-medium text-ink underline underline-offset-4"
+                >
+                  Fatima Muhammad Jidda
+                </a>
+                , came to Egypt to study and
                 experienced life in Egypt firsthand. After living and studying in Cairo, we
                 understood many of the challenges African travelers face when preparing to travel
                 to Egypt.
