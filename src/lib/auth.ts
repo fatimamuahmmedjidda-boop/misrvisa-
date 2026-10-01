@@ -6,6 +6,9 @@ export interface AdminSessionPayload extends Record<string, string> {
   adminId: string;
   email: string;
   name: string;
+  role: string;
+  /** Session version — bumped on password change so old tokens stop working. */
+  v: string;
 }
 
 const adminSession = makeSession<AdminSessionPayload>(SESSION_COOKIE);

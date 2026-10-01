@@ -1,3 +1,4 @@
+import { guardRequest } from "@/lib/rateLimit";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -8,6 +9,9 @@ import { createCustomerSession } from "@/lib/customerAuth";
 // We do not create brand-new customer records here — an account only exists
 // once someone has actually submitted an application.
 export async function POST(request: Request) {
+  const blocked = guardRequest(request, "account-register", 5, 60 * 60_000);
+  if (blocked) return blocked;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -40,12 +44,16 @@ export async function POST(request: Request) {
   }
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
-  await prisma.customer.update({ where: { id: customer.id }, data: { passwordHash } });
+  const updated = await prisma.customer.update({
+    where: { id: customer.id },
+    data: { passwordHash, sessionVersion: { increment: 1 } },
+  });
 
   await createCustomerSession({
     customerId: customer.id,
     email: customer.email,
     fullName: customer.fullName,
+    v: String(updated.sessionVersion),
   });
 
   return NextResponse.json({ ok: true }, { status: 201 });

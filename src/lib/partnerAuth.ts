@@ -6,6 +6,8 @@ export interface PartnerSessionPayload extends Record<string, string> {
   partnerId: string;
   email: string;
   name: string;
+  /** Session version — bumped on password change so old tokens stop working. */
+  v: string;
 }
 
 const partnerSession = makeSession<PartnerSessionPayload>(PARTNER_SESSION_COOKIE);

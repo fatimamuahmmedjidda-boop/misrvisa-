@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { adminPartnerSchema } from "@/lib/validation";
+import { requireAdmin } from "@/lib/authz";
 
 function makeReferralCode(name: string) {
   const base = name.replace(/[^a-zA-Z]/g, "").slice(0, 6).toUpperCase() || "PARTNER";
@@ -9,7 +10,10 @@ function makeReferralCode(name: string) {
   return `${base}-${suffix}`;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const partners = await prisma.partner.findMany({
     orderBy: { createdAt: "desc" },
     select: {
@@ -27,6 +31,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   let body: unknown;
   try {
     body = await request.json();

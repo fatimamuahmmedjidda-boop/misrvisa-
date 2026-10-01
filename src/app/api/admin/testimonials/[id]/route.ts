@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { testimonialSchema } from "@/lib/validation";
+import { requireAdmin } from "@/lib/authz";
 
 export async function PATCH(request: Request, { params }: RouteContext<"/api/admin/testimonials/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   let body: unknown;
@@ -29,7 +33,10 @@ export async function PATCH(request: Request, { params }: RouteContext<"/api/adm
   }
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext<"/api/admin/testimonials/[id]">) {
+export async function DELETE(request: Request, { params }: RouteContext<"/api/admin/testimonials/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
   try {
     await prisma.testimonial.delete({ where: { id } });

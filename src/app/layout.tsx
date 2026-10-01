@@ -1,131 +1,67 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
 import "@fontsource-variable/fraunces/opsz.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { CONTACT_EMAIL, WHATSAPP_NUMBER, MANAGER_PHONE } from "@/lib/content/social";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import MarketingTags from "@/components/site/MarketingTags";
+import { CORE_KEYWORDS, JsonLdScript, organizationJsonLd, siteUrl, websiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+const defaultTitle = "Egypt Visa on Arrival USD 36 · OK-to-Board in 24–48h | MISR VISA";
+const defaultDescription =
+  "Travel to Egypt with MISR VISA. OK-to-Board in 24–48 hours with EgyptAir or Ethiopian Airlines, the USD 36 QR visa on arrival at Cairo Airport, flights, hotels and airport pickup for African travelers.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
-  title: {
-    default: "MISR VISA — Egypt Visa-on-Arrival Assistance for African Travelers",
-    template: "%s | MISR VISA",
-  },
-  description:
-    "MISR VISA helps eligible African travelers with Egypt Visa-on-Arrival assistance, ticket support, accommodation, airport pickup, and OK-to-Board guidance.",
-  keywords: [
-    "Egypt visa",
-    "Egypt Visa-on-Arrival",
-    "Egypt visa assistance",
-    "visa on arrival Egypt for Africans",
-    "Egypt travel accommodation",
-    "Cairo airport pickup",
-    "OK to Board Egypt",
-    "Egypt visa help Nigeria",
-    "Egypt tourist visa assistance",
-  ],
+  title: { default: defaultTitle, template: "%s | MISR VISA" },
+  description: defaultDescription,
+  applicationName: "MISR VISA",
+  category: "travel",
+  keywords: CORE_KEYWORDS,
+  authors: [{ name: "Fatima Muhammad Jidda", url: "https://www.fatimamjidda.com" }],
+  creator: "Fatima Muhammad Jidda",
+  publisher: "MISR VISA",
+  formatDetection: { telephone: false },
   robots: {
     index: true,
     follow: true,
-    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1 },
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 },
   },
   openGraph: {
     type: "website",
     siteName: "MISR VISA",
-    title: "MISR VISA — Egypt Visa-on-Arrival Assistance for African Travelers",
-    description:
-      "Trusted traveler support for Egypt: Visa-on-Arrival assistance, tickets, accommodation, airport pickup, and OK-to-Board guidance.",
-    url: siteUrl,
+    title: defaultTitle,
+    description: defaultDescription,
+    url: "/",
+    locale: "en",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "MISR VISA — Egypt Visa-on-Arrival Assistance",
-    description:
-      "Trusted traveler support for Egypt: Visa-on-Arrival assistance, tickets, accommodation, airport pickup, and OK-to-Board guidance.",
-  },
-  alternates: {
-    canonical: "/",
+  twitter: { card: "summary_large_image", title: defaultTitle, description: defaultDescription },
+  alternates: { canonical: "/" },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION
+      ? { "msvalidate.01": process.env.NEXT_PUBLIC_BING_SITE_VERIFICATION }
+      : undefined,
   },
 };
 
-const organizationJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "TravelAgency",
-  "@id": `${siteUrl}/#organization`,
-  name: "MISR VISA",
-  description:
-    "MISR VISA provides Egypt Visa-on-Arrival assistance, ticket support, accommodation, airport pickup, and OK-to-Board guidance for eligible African travelers. MISR VISA is a private service provider, not a government body or embassy.",
-  url: siteUrl,
-  logo: `${siteUrl}/brand/logo-mark.png`,
-  image: `${siteUrl}/brand/logo-mark.png`,
-  foundingDate: "2022",
-  email: CONTACT_EMAIL,
-  telephone: MANAGER_PHONE,
-  areaServed: [
-    { "@type": "Country", name: "Nigeria" },
-    { "@type": "Country", name: "Ghana" },
-    { "@type": "Country", name: "Sudan" },
-    { "@type": "Country", name: "Chad" },
-    { "@type": "Continent", name: "Africa" },
-  ],
-  knowsLanguage: ["en", "ar"],
-  contactPoint: [
-    {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      email: CONTACT_EMAIL,
-      telephone: WHATSAPP_NUMBER,
-      availableLanguage: ["English", "Arabic"],
-      areaServed: "Africa",
-    },
-  ],
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "Egypt traveler support services",
-    itemListElement: [
-      "Egypt Visa-on-Arrival Assistance",
-      "Ticket / Flight Assistance",
-      "Accommodation Assistance",
-      "Airport Pickup",
-      "OK-to-Board Support",
-    ].map((name) => ({
-      "@type": "Offer",
-      itemOffered: { "@type": "Service", name, provider: { "@id": `${siteUrl}/#organization` } },
-    })),
-  },
-  sameAs: [
-    "https://www.instagram.com/misrvisa",
-    "https://www.facebook.com/share/1BsiqaCvLj/",
-    "https://www.tiktok.com/@misrvisa",
-  ],
-};
-
-const websiteJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  url: siteUrl,
-  name: "MISR VISA",
-  publisher: { "@id": `${siteUrl}/#organization` },
+export const viewport: Viewport = {
+  themeColor: "#021510",
+  colorScheme: "dark light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-white text-ink">
+      <body className="min-h-full">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={JsonLdScript([organizationJsonLd, websiteJsonLd])}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
-        />
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
+        <Analytics />
+        <SpeedInsights />
+        <MarketingTags />
       </body>
     </html>
   );

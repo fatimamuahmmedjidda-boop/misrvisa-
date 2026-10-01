@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { blogPostSchema } from "@/lib/validation";
+import { requireAdmin } from "@/lib/authz";
 
-export async function GET(_request: Request, { params }: RouteContext<"/api/admin/blog/[id]">) {
+export async function GET(request: Request, { params }: RouteContext<"/api/admin/blog/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
   const post = await prisma.blogPost.findUnique({ where: { id } });
   if (!post) return NextResponse.json({ error: "Not found." }, { status: 404 });
@@ -10,6 +14,9 @@ export async function GET(_request: Request, { params }: RouteContext<"/api/admi
 }
 
 export async function PATCH(request: Request, { params }: RouteContext<"/api/admin/blog/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   let body: unknown;
@@ -50,7 +57,10 @@ export async function PATCH(request: Request, { params }: RouteContext<"/api/adm
   }
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext<"/api/admin/blog/[id]">) {
+export async function DELETE(request: Request, { params }: RouteContext<"/api/admin/blog/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
   try {
     await prisma.blogPost.delete({ where: { id } });

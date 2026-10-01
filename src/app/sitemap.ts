@@ -1,51 +1,44 @@
 import type { MetadataRoute } from "next";
-import { prisma } from "@/lib/prisma";
+import { ARTICLES } from "@/lib/content/articles";
 import { services } from "@/lib/content/services";
+import { prisma } from "@/lib/prisma";
+import { siteUrl } from "@/lib/seo";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+export const revalidate = 3600;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const priorities: Record<string, number> = {
-    "": 1,
-    "/visa-on-arrival": 0.9,
-    "/services": 0.8,
-    "/apply": 0.8,
-    "/how-it-works": 0.7,
-    "/faq": 0.7,
-    "/who-we-are": 0.7,
-    "/contact": 0.6,
-    "/track": 0.6,
-    "/blog": 0.6,
-    "/partner": 0.5,
-    "/terms": 0.3,
-  };
+  const now = new Date();
+  const pages: [string, number, MetadataRoute.Sitemap[number]["changeFrequency"]][] = [
+    ["", 1, "weekly"],
+    ["/visa-on-arrival", 0.95, "weekly"],
+    ["/how-it-works", 0.8, "monthly"],
+    ["/services", 0.8, "monthly"],
+    ["/faq", 0.8, "weekly"],
+    ["/blog", 0.8, "daily"],
+    ["/partner", 0.75, "monthly"],
+    ["/apply", 0.7, "monthly"],
+    ["/track", 0.5, "monthly"],
+    ["/who-we-are", 0.5, "yearly"],
+    ["/contact", 0.5, "yearly"],
+    ["/terms", 0.2, "yearly"],
+    ["/privacy", 0.2, "yearly"],
+  ];
 
-  const staticRoutes = Object.keys(priorities).map((path) => ({
-    url: `${siteUrl}${path}`,
-    lastModified: new Date(),
-    changeFrequency: (path === "" || path === "/blog" ? "weekly" : "monthly") as
-      | "weekly"
-      | "monthly",
-    priority: priorities[path],
-  }));
+  let dbPosts: { slug: string; updatedAt: Date }[] = [];
+  try {
+    dbPosts = await prisma.blogPost.findMany({ where: { published: true }, select: { slug: true, updatedAt: true } });
+  } catch {
+    // Sitemap still lists every static page if the database is unreachable.
+  }
 
-  const serviceRoutes = services
-    .filter((s) => s.slug !== "visa-on-arrival")
-    .map((s) => ({
-      url: `${siteUrl}/services/${s.slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
-
-  const posts = await prisma.blogPost.findMany({
-    where: { published: true },
-    select: { slug: true, updatedAt: true },
-  });
-  const postRoutes = posts.map((p) => ({
-    url: `${siteUrl}/blog/${p.slug}`,
-    lastModified: p.updatedAt,
-  }));
-
-  return [...staticRoutes, ...serviceRoutes, ...postRoutes];
+  return [
+    ...pages.map(([path, priority, changeFrequency]) => ({ url: `${siteUrl}${path}`, lastModified: now, changeFrequency, priority })),
+    ...services
+      .filter((s) => s.slug !== "visa-on-arrival")
+      .map((s) => ({ url: `${siteUrl}/services/${s.slug}`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.7 })),
+    ...ARTICLES.map((a) => ({ url: `${siteUrl}/blog/${a.slug}`, lastModified: new Date(a.publishedAt), changeFrequency: "monthly" as const, priority: 0.7 })),
+    ...dbPosts
+      .filter((p) => !ARTICLES.some((a) => a.slug === p.slug))
+      .map((p) => ({ url: `${siteUrl}/blog/${p.slug}`, lastModified: p.updatedAt, changeFrequency: "monthly" as const, priority: 0.65 })),
+  ];
 }

@@ -1,8 +1,12 @@
+import { guardRequest } from "@/lib/rateLimit";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { partnerSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
+  const blocked = guardRequest(request, "partners", 5, 60 * 60_000);
+  if (blocked) return blocked;
+
   let body: unknown;
   try {
     body = await request.json();

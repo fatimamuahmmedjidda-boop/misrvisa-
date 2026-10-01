@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { PARTNER_STATUSES } from "@/lib/statuses";
+import { requireAdmin } from "@/lib/authz";
 
 const updateSchema = z.object({
   status: z.enum(PARTNER_STATUSES),
 });
 
 export async function PATCH(request: Request, { params }: RouteContext<"/api/admin/partners/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   let body: unknown;

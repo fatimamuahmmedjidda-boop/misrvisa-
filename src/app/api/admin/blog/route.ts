@@ -1,13 +1,20 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { blogPostSchema } from "@/lib/validation";
+import { requireAdmin } from "@/lib/authz";
 
-export async function GET() {
+export async function GET(request: Request) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const posts = await prisma.blogPost.findMany({ orderBy: { createdAt: "desc" } });
   return NextResponse.json(posts);
 }
 
 export async function POST(request: Request) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   let body: unknown;
   try {
     body = await request.json();

@@ -1,7 +1,10 @@
+import { guardRequest } from "@/lib/rateLimit";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
+import { hashResetToken } from "@/lib/passwordReset";
+import { logAudit } from "@/lib/audit";
 
 const schema = z.object({
   token: z.string().min(10, "This reset link is not valid. Please request a new one."),
@@ -9,6 +12,9 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
+  const blocked = guardRequest(request, "account-reset", 10, 60 * 60_000);
+  if (blocked) return blocked;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -27,7 +33,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  const reset = await prisma.passwordReset.findUnique({ where: { token: parsed.data.token } });
+  // Authentication is by hash only. The submitted value must be the raw token
+  // from the email — submitting a stored hash hashes again and matches nothing.
+  const tokenHash = hashResetToken(parsed.data.token);
+  const reset = await prisma.passwordReset.findUnique({ where: { tokenHash } });
 
   if (!reset || reset.usedAt || reset.expiresAt < new Date()) {
     return NextResponse.json(
@@ -38,17 +47,26 @@ export async function POST(request: Request) {
 
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
 
+  // Bumping sessionVersion signs out every existing session for this account.
   if (reset.userType === "CUSTOMER") {
     await prisma.customer.update({
       where: { email: reset.email },
-      data: { passwordHash },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
     });
   } else {
     await prisma.partner.update({
       where: { email: reset.email },
-      data: { passwordHash },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
     });
   }
+
+  await logAudit({
+    actor: { type: reset.userType === "PARTNER" ? "PARTNER" : "CUSTOMER", email: reset.email },
+    action: "PASSWORD_RESET_COMPLETED",
+    entity: reset.userType === "PARTNER" ? "Partner" : "Customer",
+    metadata: { userType: reset.userType },
+    request,
+  });
 
   await prisma.passwordReset.update({
     where: { id: reset.id },

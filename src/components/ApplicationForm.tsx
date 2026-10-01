@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { services } from "@/lib/content/services";
 import { applicationSchema } from "@/lib/validation";
 import { Field, TextInput, TextArea } from "@/components/form/Field";
+import CountryPicker from "@/components/form/CountryPicker";
 
 const purposes = ["Tourism", "Medical Travel", "Study", "Visiting Family", "Other"];
 
 export default function ApplicationForm({ preselectedService }: { preselectedService?: string }) {
   const [service, setService] = useState(preselectedService ?? services[0].dbValue);
+
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search).get("service");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the URL after static render
+    if (!preselectedService && q && services.some((s) => s.dbValue === q)) setService(q);
+  }, [preselectedService]);
   const [values, setValues] = useState({
     fullName: "",
     nationality: "",
@@ -162,10 +169,11 @@ export default function ApplicationForm({ preselectedService }: { preselectedSer
           />
         </Field>
         <Field label="Nationality" htmlFor="nationality" error={errors.nationality}>
-          <TextInput
+          <CountryPicker
             id="nationality"
+            mode="nationality"
             value={values.nationality}
-            onChange={(e) => update("nationality", e.target.value)}
+            onChange={(v) => update("nationality", v)}
             required
           />
         </Field>

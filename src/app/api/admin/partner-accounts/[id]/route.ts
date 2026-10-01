@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
+import { requireAdmin } from "@/lib/authz";
 
 const patchSchema = z.object({
   commissionPercent: z.coerce.number().min(0).max(100).optional(),
@@ -8,6 +9,9 @@ const patchSchema = z.object({
 });
 
 export async function PATCH(request: Request, { params }: RouteContext<"/api/admin/partner-accounts/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   let body: unknown;
@@ -31,7 +35,10 @@ export async function PATCH(request: Request, { params }: RouteContext<"/api/adm
   return NextResponse.json(partner);
 }
 
-export async function DELETE(_request: Request, { params }: RouteContext<"/api/admin/partner-accounts/[id]">) {
+export async function DELETE(request: Request, { params }: RouteContext<"/api/admin/partner-accounts/[id]">) {
+  const auth = await requireAdmin(request);
+  if (!auth.ok) return auth.response;
+
   const { id } = await params;
 
   const [apps, customers] = await Promise.all([

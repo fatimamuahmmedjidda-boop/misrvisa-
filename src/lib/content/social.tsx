@@ -1,6 +1,6 @@
 export const CONTACT_EMAIL = "info@misrvisa.com";
 export const SITE_URL = "https://www.misrvisa.com";
-export const WHATSAPP_NUMBER = "+20155898888371";
+export const WHATSAPP_NUMBER = "+201032129448";
 export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER.replace(/[^0-9]/g, "")}`;
 export const MANAGER_PHONE = "+201032129448";
 export const MANAGER_PHONE_LINK = `tel:${MANAGER_PHONE}`;

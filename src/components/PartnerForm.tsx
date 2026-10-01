@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { partnerSchema } from "@/lib/validation";
 import { Field, TextInput, TextArea } from "@/components/form/Field";
+import CountryPicker from "@/components/form/CountryPicker";
 
 const initial = {
   companyName: "",
@@ -99,10 +100,11 @@ export default function PartnerForm() {
           />
         </Field>
         <Field label="Country" htmlFor="country" error={errors.country}>
-          <TextInput
+          <CountryPicker
             id="country"
+            mode="country"
             value={values.country}
-            onChange={(e) => update("country", e.target.value)}
+            onChange={(v) => update("country", v)}
             required
           />
         </Field>

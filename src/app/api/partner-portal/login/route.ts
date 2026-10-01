@@ -1,3 +1,4 @@
+import { guardRequest } from "@/lib/rateLimit";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -5,6 +6,9 @@ import { loginSchema } from "@/lib/validation";
 import { createPartnerSession } from "@/lib/partnerAuth";
 
 export async function POST(request: Request) {
+  const blocked = guardRequest(request, "partner-portal-login", 8, 15 * 60_000);
+  if (blocked) return blocked;
+
   let body: unknown;
   try {
     body = await request.json();
@@ -31,6 +35,7 @@ export async function POST(request: Request) {
     partnerId: partner.id,
     email: partner.email,
     name: partner.name,
+    v: String(partner.sessionVersion),
   });
 
   return NextResponse.json({ ok: true });
