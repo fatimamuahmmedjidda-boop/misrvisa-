@@ -38,11 +38,12 @@ export default function ForgotPasswordForm() {
       <div className="rounded-2xl border border-emerald/20 bg-white p-7 text-center shadow-sm">
         <h2 className="font-display text-xl font-semibold text-emerald-dark">Request received</h2>
         <p className="mt-3 text-sm leading-relaxed text-ink/70">
-          If an account exists for <span className="font-medium text-ink">{email}</span>, our team
-          will send you a reset link shortly on WhatsApp or by email.
+          If an account exists for <span className="font-medium text-ink">{email}</span>, we&rsquo;ve
+          emailed a reset link to that address. It works once and expires in 60 minutes — remember to
+          check your spam folder.
         </p>
         <p className="mt-4 text-sm leading-relaxed text-ink/60">
-          Need it urgently? Message us on WhatsApp at{" "}
+          Didn&rsquo;t receive it? Message us on WhatsApp at{" "}
           <span className="font-medium text-emerald">{WHATSAPP_NUMBER}</span> or email{" "}
           <a href={`mailto:${CONTACT_EMAIL}`} className="font-medium text-emerald underline">
             {CONTACT_EMAIL}

@@ -11,7 +11,7 @@ import { SITE_URL } from "@/lib/content/social";
 const schema = z.object({ email: z.string().trim().email() });
 
 export async function POST(request: Request) {
-  const blocked = guardRequest(request, "account-forgot", 5, 60 * 60_000);
+  const blocked = guardRequest(request, "account-forgot", 5, 15 * 60_000);
   if (blocked) return blocked;
 
   let body: unknown;
@@ -28,23 +28,28 @@ export async function POST(request: Request) {
 
   const email = parsed.data.email.toLowerCase();
 
+  // Case-insensitive so accounts created before email normalisation still match.
+  const match = { email: { equals: email, mode: "insensitive" as const } };
   const [customer, partner] = await Promise.all([
-    prisma.customer.findUnique({ where: { email }, select: { id: true } }),
-    prisma.partner.findUnique({ where: { email }, select: { active: true } }),
+    prisma.customer.findFirst({ where: match, select: { email: true } }),
+    prisma.partner.findFirst({ where: match, select: { email: true, active: true } }),
   ]);
 
   const userType = customer ? "CUSTOMER" : partner?.active ? "PARTNER" : null;
+  // Store the address exactly as the account holds it, so the reset step and
+  // any later lookup agree on one value.
+  const accountEmail = customer?.email ?? partner?.email ?? email;
 
   if (userType) {
     // Drop any earlier unused link for this email so only the newest one works.
-    await prisma.passwordReset.deleteMany({ where: { email, usedAt: null } });
+    await prisma.passwordReset.deleteMany({ where: { email: accountEmail, usedAt: null } });
 
     // Nothing replayable is stored: only the hash authenticates, and the
     // legacy `token` column holds an unrelated random placeholder.
     const record = buildResetRecord();
     await prisma.passwordReset.create({
       data: {
-        email,
+        email: accountEmail,
         userType,
         token: record.token,
         tokenHash: record.tokenHash,
@@ -57,7 +62,7 @@ export async function POST(request: Request) {
     const base = (process.env.NEXT_PUBLIC_SITE_URL ?? SITE_URL).replace(/\/$/, "");
     const resetUrl = `${base}/account/reset?token=${encodeURIComponent(record.rawToken)}`;
 
-    const delivery = await sendEmail(passwordResetEmail({ to: email, resetUrl, minutes: RESET_TOKEN_TTL_MINUTES }));
+    const delivery = await sendEmail(passwordResetEmail({ to: accountEmail, resetUrl, minutes: RESET_TOKEN_TTL_MINUTES }));
 
     // Local development only: with no email provider configured there would be
     // no way to continue the flow. Never in production, never in the database,

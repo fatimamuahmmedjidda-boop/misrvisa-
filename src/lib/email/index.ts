@@ -34,7 +34,16 @@ class ResendProvider implements EmailProvider {
         reply_to: message.replyTo,
       }),
     });
-    if (!res.ok) return { ok: false as const, error: `Resend responded ${res.status}` };
+    if (!res.ok) {
+      // Resend's error body carries the reason (e.g. an unverified sender
+      // domain). It contains no secret, and knowing it turns a silent failure
+      // into something fixable.
+      const detail = (await res.json().catch(() => null)) as { name?: string; message?: string } | null;
+      return {
+        ok: false as const,
+        error: `Resend responded ${res.status}${detail?.message ? `: ${detail.message}` : ""}`,
+      };
+    }
     const data = (await res.json().catch(() => ({}))) as { id?: string };
     return { ok: true as const, id: data.id };
   }

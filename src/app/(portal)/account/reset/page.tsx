@@ -29,8 +29,8 @@ export default async function ResetPasswordPage({ searchParams }: PageProps<"/ac
           ) : (
             <div className="text-center">
               <p className="text-sm leading-relaxed text-ink/70">
-                This page needs a reset link to work. Please open the link our team sent you, or
-                request a new one.
+                This page needs a reset link to work. Please open the link from the email we sent
+                you, or request a new one.
               </p>
               <Link
                 href="/account/forgot"

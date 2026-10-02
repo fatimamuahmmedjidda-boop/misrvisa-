@@ -12,7 +12,7 @@ const schema = z.object({
 });
 
 export async function POST(request: Request) {
-  const blocked = guardRequest(request, "account-reset", 10, 60 * 60_000);
+  const blocked = guardRequest(request, "account-reset", 10, 15 * 60_000);
   if (blocked) return blocked;
 
   let body: unknown;
@@ -48,16 +48,21 @@ export async function POST(request: Request) {
   const passwordHash = await bcrypt.hash(parsed.data.password, 12);
 
   // Bumping sessionVersion signs out every existing session for this account.
-  if (reset.userType === "CUSTOMER") {
-    await prisma.customer.update({
-      where: { email: reset.email },
-      data: { passwordHash, sessionVersion: { increment: 1 } },
-    });
-  } else {
-    await prisma.partner.update({
-      where: { email: reset.email },
-      data: { passwordHash, sessionVersion: { increment: 1 } },
-    });
+  // `updateMany` with a case-insensitive match so accounts created before email
+  // normalisation (e.g. "Fatima@Gmail.com") still resolve, and so a missing
+  // account returns a clean error instead of throwing P2025.
+  const where = { email: { equals: reset.email, mode: "insensitive" as const } };
+  const data = { passwordHash, sessionVersion: { increment: 1 } };
+  const updated =
+    reset.userType === "CUSTOMER"
+      ? await prisma.customer.updateMany({ where, data })
+      : await prisma.partner.updateMany({ where, data });
+
+  if (updated.count === 0) {
+    return NextResponse.json(
+      { error: "This reset link is no longer valid. Please request a new one." },
+      { status: 400 },
+    );
   }
 
   await logAudit({
