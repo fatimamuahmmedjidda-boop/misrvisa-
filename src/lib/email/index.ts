@@ -62,22 +62,34 @@ class ConsoleProvider implements EmailProvider {
 }
 
 export function getEmailProvider(): EmailProvider {
-  const from = process.env.EMAIL_FROM;
-  const key = process.env.RESEND_API_KEY;
-  const provider = (process.env.EMAIL_PROVIDER ?? (key ? "resend" : "console")).toLowerCase();
+  // Trimmed, so a value that is accidentally blank or whitespace-only is
+  // treated as missing rather than silently selecting a broken provider.
+  const from = process.env.EMAIL_FROM?.trim();
+  const key = process.env.RESEND_API_KEY?.trim();
+  const provider = (process.env.EMAIL_PROVIDER?.trim() || (key ? "resend" : "console")).toLowerCase();
   if (provider === "resend" && key && from) return new ResendProvider(key, from);
   return new ConsoleProvider();
 }
 
 /**
  * TEMPORARY DIAGNOSTIC — remove once email delivery is confirmed.
- * Logs only whether each variable is present, never its value.
+ *
+ * Logged at error level so it cannot be hidden by a log viewer that filters
+ * warnings. It reports presence, declared-ness and length only — never a value,
+ * so "variable absent" can be told apart from "variable present but empty".
  */
 function logEmailConfigDiagnostic(providerName: string) {
-  console.warn("[email-config]", {
-    hasEmailFrom: Boolean(process.env.EMAIL_FROM),
-    hasResendApiKey: Boolean(process.env.RESEND_API_KEY),
+  const from = process.env.EMAIL_FROM;
+  const key = process.env.RESEND_API_KEY;
+  console.error("[email-config]", {
     selectedProvider: providerName,
+    emailFromDeclared: "EMAIL_FROM" in process.env,
+    emailFromLength: from?.trim().length ?? 0,
+    emailFromHasAt: Boolean(from?.includes("@")),
+    resendKeyDeclared: "RESEND_API_KEY" in process.env,
+    resendKeyLength: key?.trim().length ?? 0,
+    resendKeyPrefixOk: Boolean(key?.trim().startsWith("re_")),
+    emailProviderOverride: process.env.EMAIL_PROVIDER?.trim() ?? null,
     nodeEnv: process.env.NODE_ENV ?? null,
     vercelEnv: process.env.VERCEL_ENV ?? null,
   });
